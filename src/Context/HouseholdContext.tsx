@@ -2,12 +2,13 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useState,
+  useState
 } from "react";
 import { mockTasks, mockUsers } from "../Utils/Mockdata";
-import { User, Task, Icon } from "../utils/types";
+import { Task, User } from "../utils/types";
 
 interface ContextValue {
+  CurrentUser: User | null | undefined;
   Users: User[];
   Tasks: Task[]
   addTask: (task: Task) => void;
@@ -16,6 +17,7 @@ interface ContextValue {
   addUser: (user: User) => void;
   removeUser: (id: number) => void;
   updateUser: (user: User) => void;
+  updateCurrentUser: (user: User) => void;
 }
 
 interface Props {
@@ -23,6 +25,7 @@ interface Props {
 }
 
 const HouseholdContext = createContext<ContextValue>({
+  CurrentUser: null,
   Users: [],
   Tasks: [],
   addTask: () => {
@@ -43,11 +46,15 @@ const HouseholdContext = createContext<ContextValue>({
   updateUser: () => {
     console.warn("Householdprovider not found");
   },
+  updateCurrentUser: () => {
+    console.warn("Householdprovider not found");
+  },
 });
 
 function Householdprovider({ children }: Props) {
   const [Tasks, setTasks] = useState<Task[]>(mockTasks);
   const [Users, setUsers] = useState<User[]>(mockUsers);
+  const [CurrentUser, setCurrentUser] = useState<User>();
 
   const addTask = (task: Task) => {
     const newTasks = [... Tasks];
@@ -83,9 +90,14 @@ function Householdprovider({ children }: Props) {
     );
   };
 
+  const updateCurrentUser = (user: User) => {
+    setCurrentUser(user);
+  }
+
   return (
     <HouseholdContext.Provider
       value={{
+        CurrentUser,
         Tasks,
         Users,
         addTask,
@@ -93,7 +105,8 @@ function Householdprovider({ children }: Props) {
         updateTask,
         addUser,
         removeUser,
-        updateUser
+        updateUser,
+        updateCurrentUser
       }}
     >
       {children}
